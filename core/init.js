@@ -13,6 +13,7 @@ class InitManager{
         InitManager.app = app
         // 之后去启动这个里面所有的方法
         InitManager.InitLoadRouters()
+        InitManager.loadHttpExcepttion()
     }
 
     // 自动加载
@@ -37,6 +38,12 @@ class InitManager{
                 InitManager.app.use(obj.routes())
             }
         }
+    }
+
+    static loadHttpExcepttion() {
+        // 启动的时候往全局变量上面挂一些异常的类，在使用的时候就不用再去每一次都require了
+        const errors = require('./http-exception')
+        global.errs = errors
     }
 }
 

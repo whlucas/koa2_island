@@ -1,7 +1,12 @@
 const Koa = require('koa')
 const InitManager = require('./core/init')
+const parser = require('koa-bodyparser')
+const catchError = require('./middlewares/exception')
 
 const app = new Koa()
+
+app.use(parser())
+app.use(catchError) // 用了这个自己写的异常处理方法，可以把一些提示返回给客户端
 
 // 这里获得app了之后启动入口方法，把app传进去,解决那边没有app的问题
 InitManager.initCore(app)
