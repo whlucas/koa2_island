@@ -26,8 +26,12 @@ router.get('/v1/:id/classic/latest', async (ctx, next) => {
     // const v = new PositiveIntergerValdator()
     // v.validate(ctx) // 调用这个validate方法并且把ctx传进去，他能帮你找到你这个校验器需要校验的参数名并且看一下规则对不对
     // 也可以直接在new后面链试调用
-    const V = await new PositiveIntergerValdator().validate(ctx)
+    const v = await new PositiveIntergerValdator().validate(ctx)
+    // 利用lin-valdator来获取参数
+    // 这里会自动把他转换为整形，如果不要这个功能，在后面加一个参数parsed=false
+    const id = v.get('path.id', parsed = false) // 利用这个v里面的get方法可以获取参数，path代表获取路径里面的参数，id代表获取参数名
 
+    // 这种方式可以获取嵌套对象里面的参数通过a.b.e这样的方式来获取，且不用判断不存在的情况，如果没有的话只会给你返回一个空值
 
     // 异常处理 原理写在更目录的exceotionHandling_introduce里面
 

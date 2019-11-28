@@ -22,6 +22,19 @@ const catchError = async (ctx, next) => {
         // 未知型错误，链接数据库时密码输错了
 
         // 如果是已知异常则一般带有error_code
+
+        // 我在这里catch住了所有的异常，并且把这些异常都转化成了一个输出返回给前端，所以我的终端里面就不能正常的打印错误
+
+        // 我们在做异常处理的时候要注意是开发环境还是生产环境
+
+        // 开发环境需要我们把终端里面的error throw出去用来做调试，但是在生产环境中我们就不需要throw error了，因为已经没有问题了
+
+        // 所以我们需要区分是开发环境还是生产环境，这里使用配置文件的形式，配置文件写在config下面的config.js
+
+        if(global.config.environment === 'dev'){
+            throw error
+        }
+
         if(error instanceof HttpException){
             ctx.body = {
                 msg: error.msg,

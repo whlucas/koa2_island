@@ -14,6 +14,7 @@ class InitManager{
         // 之后去启动这个里面所有的方法
         InitManager.InitLoadRouters()
         InitManager.loadHttpExcepttion()
+        InitManager.loadConfig()
     }
 
     // 自动加载
@@ -45,6 +46,14 @@ class InitManager{
         const errors = require('./http-exception')
         global.errs = errors
     }
+
+    static loadConfig(path = '') {
+        // 启动的时候往全局变量挂配置文件
+        const configPath = path || process.cwd() + '/config/config.js'
+        const config = require(configPath)
+        global.config = config
+    }
+    
 }
 
 module.exports = InitManager
