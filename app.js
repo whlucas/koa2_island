@@ -11,7 +11,8 @@ app.use(catchError) // 用了这个自己写的异常处理方法，可以把一
 // 这里获得app了之后启动入口方法，把app传进去,解决那边没有app的问题
 InitManager.initCore(app)
 
-
+// 这里临时导入一下models里面的代码，为了能够执行代码生成数据表
+require('./app/models/user')
 
 
 // api 版本 业务变动
