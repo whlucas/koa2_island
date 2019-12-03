@@ -5,7 +5,7 @@ const { HttpException, ParameterException } = require('../../../core/http-except
 
 const { PositiveIntergerValdator } = require('../../validators/validator')
 
-router.get('/v1/:id/classic/latest', async (ctx, next) => {
+router.post('/v1/:id/classic/latest', async (ctx, next) => {
     // 拿到参数
     // 这样的路由可以在：后面有一个id参数
     const path = ctx.params // 这个可以获取路由里面的:id这样的参数

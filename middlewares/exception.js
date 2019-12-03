@@ -15,7 +15,7 @@ const catchError = async (ctx, next) => {
         // 2. message自己写的提示信息
         // 3. 开发者自己定义的error_code,前端用来进行逻辑判断
         // 当前请求的url
-        // ctx.body = '有点问题'   
+        // ctx.body = '有点问题'
         
         // 错误分类
         // 已知型错误，可以判断出来的错误
@@ -30,12 +30,16 @@ const catchError = async (ctx, next) => {
         // 开发环境需要我们把终端里面的error throw出去用来做调试，但是在生产环境中我们就不需要throw error了，因为已经没有问题了
 
         // 所以我们需要区分是开发环境还是生产环境，这里使用配置文件的形式，配置文件写在config下面的config.js
+        // 生产环境且不是HttpException
 
-        if(global.config.environment === 'dev'){
+        const isHttpException = error instanceof HttpException
+        const isDev = global.config.environment === 'dev'
+
+        if(isDev && !isHttpException){
             throw error
         }
 
-        if(error instanceof HttpException){
+        if (isHttpException) {
             ctx.body = {
                 msg: error.msg,
                 error_code: error.errorCode,

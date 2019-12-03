@@ -39,11 +39,13 @@ const findMembers = function (instance, {
     return _find(instance)
 }
 
+// 写一个生成jwt令牌的方法
 const generateToken = function (uid, scope) {
     const secretKey = global.config.security.secretKey
     const expiresIn = global.config.security.expiresIn
+    // 这个函数就是用来生成令牌的，第一个参数payload,可以往令牌里面写入一些我们自定义的信息，第二个私钥，第三个配置，key写到配置文件里面去
     const token = jwt.sign({
-        uid,
+        uid,           // 往令牌里面写入的自定义的信息
         scope
     }, secretKey, {
         expiresIn
