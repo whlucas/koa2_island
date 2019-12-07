@@ -4,7 +4,7 @@ const { success } = require('../../lib/helper')
 
 const { LoginType } = require('../../lib/enum')
 
-const { TokenValidator } = require('../../validators/validator')
+const { TokenValidator, NotEmptyValidator } = require('../../validators/validator')
 
 const { User } = require('../../models/user')
 
@@ -39,6 +39,17 @@ router.post('/', async (ctx) => {
     }
     ctx.body = {
         token
+    }
+})
+
+
+// 验证令牌的接口
+router.post('/verify', async (ctx) => {
+    // 首先对参数进行校验
+    const v = await new NotEmptyValidator().validate(ctx)
+    const result = Auth.verifyToken(v.get('body.token'))
+    ctx.body = {
+        is_valid: result
     }
 })
 

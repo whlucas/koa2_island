@@ -2,7 +2,7 @@ const { LinValidator, Rule } = require('../../core/lin-validator')
 // 导入User这个模型
 // 只要是操作数据库都要调用我们创建的模型
 const { User } = require('../models/user')
-const { LoginType } = require('../lib/enum')
+const { LoginType, ArtType } = require('../lib/enum')
 
 // 这个里面是很多参数校验器
 class PositiveIntergerValdator extends LinValidator{
@@ -94,9 +94,133 @@ class TokenValidator extends LinValidator{
     }
 }
 
+class NotEmptyValidator extends LinValidator{
+    constructor() {
+        super()
+        this.token = [
+            new Rule('isLength', '不允许为空', {min: 1})
+        ]
+    }
+}
+
+// 这是提取出来了一个对type校验的规则
+function checkType(vals) {
+    let type = vals.body.type || vals.path.type  // 这里可以在多个地方找到type，他不一定是在body里面传参
+    if (!type) {
+        throw new Error('type是必须参数')
+    }
+    // 因为不是从body里面取的了，从url或者?后面取得都是字符串
+    type = parseInt(type) // 这里要转成数字
+
+    // 这里有一种方法可以把它存起来，这样从v.get('path.type')拿到的就是int型的了
+    // this.parsed.path.type = type
+
+    if (!LoginType.isThisType(type)) {
+        throw new Error('type参数不合法')
+    }
+}
+
+function checkArtType(vals) {
+    let type = vals.body.type || vals.path.type
+    if (!type) {
+        throw new Error('type是必须参数')
+    }
+    type = parseInt(type)
+
+    if (!ArtType.isThisType(type)) {
+        throw new Error('type参数不合法')
+    }
+}
+
+// 用这个类来统一checkArtType和checkType
+// 创建这个类的时候传参就表示他是检查登录类型还是实体类型了
+
+// 为什么类可以解决这个问题，因为类可以保存一个变量的状态，函数不行
+class Checker {
+    constructor(type) {
+        // 这里传进来需要校验的枚举
+        this.enumType = type
+    }
+
+    check(vals) {
+        let type = vals.body.type || vals.path.type
+        if (!type) {
+            throw new Error('type是必须参数')
+        }
+        type = parseInt(type)
+
+        // 然后判断参数里面的type在不在枚举里面
+        if (!this.enumType.isThisType(type)) {
+            throw new Error('type参数不合法')
+        }
+
+    }
+}
+
+class LikeValidator extends PositiveIntergerValdator {
+    constructor() {
+        super()
+        // 继承一下之前写过的正整数的验证
+        // 再加一个一个type的枚举验证
+
+        const checker = new Checker(ArtType)
+        this.validateType = checker.check.bind(checker) // 棒一下this让他指向自己
+        // this.validateType = checkArtType
+    }
+}
+
+// 为了给他改个名，但实际上用的还是LikeValidator
+class ClassicValidator extends LikeValidator {
+
+}
+
+class SearchValidator extends LinValidator {
+    constructor() {
+        super()
+        this.q = [
+            new Rule('isLength', '搜索关键词不能为空', {
+                min: 1,
+                max: 16
+            })
+        ]
+        this.start = [
+            new Rule('isInt', '不符合规范', {
+                min: 0,
+                max: 60000
+            }),
+            new Rule('isOptional', '', 0)
+        ]
+        this.count = [
+            new Rule('isInt', '不符合规范', {
+                min: 1,
+                max: 20
+            }),
+            new Rule('isOptional', '', 20)
+        ]
+
+    }
+}
+
+class AddShortCommentValidator extends PositiveIntergerValdator {
+    constructor() {
+        super()
+        this.content = [
+            new Rule('isLength', '必须在1到12个字符之间', {
+                min: 1,
+                max: 12
+            })
+        ]
+    }
+}
+
 
 module.exports = { 
     PositiveIntergerValdator,
     RegisterValidator,
-    TokenValidator
+    TokenValidator,
+    NotEmptyValidator,
+    LikeValidator,
+    ClassicValidator,
+    SearchValidator,
+    AddShortCommentValidator
 }

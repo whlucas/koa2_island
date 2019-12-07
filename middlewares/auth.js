@@ -31,7 +31,7 @@ class Auth {
             // 判断token的合法性
             // 是否存在
             if(!userToken || !userToken.name){
-                throw new global.errs.Forbbiden(errmsg)
+                throw new global.errs.Forbbiden(errMsg)
             }
             console.log(userToken.name, global.config.security.secretKey)
             try {
@@ -71,6 +71,17 @@ class Auth {
 
     //     }
     // }
+
+    // 在这个验证的类里面提供一个验证的方法
+    static verifyToken(token){
+        try{
+            jwt.verify(token, global.config.security.secretKey)
+            return true
+        }catch (error) {
+            // 抛出异常则不合法
+            return false
+        }
+    }
 
 }
 

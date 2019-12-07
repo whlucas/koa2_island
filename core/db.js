@@ -22,7 +22,17 @@ const sequelize = new Sequelize(dbName, user, password, {
         createdAt: 'created_at', // 定义这个create_at的格式可以定义表createdAt生成格式
         updatedAt: 'updated_at', // 同理
         deletedAt: 'deleted_at',
-        underscored: true // 这个写成true可以把所有的驼峰变成下划线，数据库的规范一般是下划线命名
+        underscored: true, // 这个写成true可以把所有的驼峰变成下划线，数据库的规范一般是下划线命名
+
+        // 这里我们在全局上定义一些预先的查询条件scopes，在这定义的可以在所有的model里面调用，当然scopes也可以定义在model里面
+        scopes: {
+            // key名可以随便来，每一个key代表一组查询条件，调用的时候使用，可以定义很多
+            bh: {
+                attributes: {
+                    exclude: ['updated_at','deleted_at','created_at']
+                }
+            }
+        }
     }
 })
 

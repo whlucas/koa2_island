@@ -1,3 +1,4 @@
+require('module-alias/register') // 用npm包module-alias来定义别名，别名定义在package.json里面的moduleAliases对象里面然后再根文件里面引入这句话就可以了
 const Koa = require('koa')
 const InitManager = require('./core/init')
 const parser = require('koa-bodyparser')

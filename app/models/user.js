@@ -35,7 +35,7 @@ class User extends Model {
         return user
     }
 
-    // 写入openid
+    // 创建一条新记录，该记录只有openid，别的没有
     static async registerByOpenid(openid) {
         return await User.create({
             openid

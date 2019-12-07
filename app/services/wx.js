@@ -26,15 +26,18 @@ class WXManager{
         console.log(url, 'url')
         // 在这里发http请求曲调微信的服务
         const result = await axios.get(url)
-        console.log(result.data)
         // 首先看一下有没有返回结果
         if(result.status !== 200){
             throw new global.errs.AuthFailed('openid获取失败')
         }
         // 如果返回正常返回这个errCode是不是0.则失败看文档
         const errCode = result.data.errcode
-        if (errCode !== 0) {
-            throw new global.errs.AuthFailed('openid获取失败' + errCode)
+        const errmsg = result.data.errmsg
+        console.log(result.data, errCode, 'msg')
+
+        // 如果成功微信的这个接口不会给我们errCode
+        if (errCode) {
+            throw new global.errs.AuthFailed('openid获取失败' + errmsg)
         }
 
         // 拿到openid给这个用户建立档案，写入到表里面去，一般不用openid代替用户id
