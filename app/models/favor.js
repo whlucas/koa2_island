@@ -132,6 +132,7 @@ class Favor extends Model {
         })
         return {
             fav_nums:favorNums,
+            // 查到了返回1，没查到返回0
             like_status:myFavor?1:0
         }
     }

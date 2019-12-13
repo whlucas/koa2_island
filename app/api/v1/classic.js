@@ -82,7 +82,9 @@ router.get('/:index/next', new Auth().m(), async (ctx) => {
         flow.artId, flow.type, ctx.auth.uid)
     art.setDataValue('index', flow.index)
     art.setDataValue('like_status', likeNext)
-    // art.exclude = ['index','like_status']
+
+    // 在art上面绑一个原型链，我在model的原型链上面定了一个方法，只要在原型链上面找到了this.exclude就把数组里面的字段排除
+    art.exclude = ['index','like_status']
     ctx.body = art
 })
 

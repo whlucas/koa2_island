@@ -12,6 +12,18 @@ const { sequelize } = require('../../core/db')
 const classicFields = {
     image: {
         type: Sequelize.STRING,    // 图片
+        // 这里来一个get，每当我读取这个image里面的东西的时候都要走这个方法，同理password加密时用到的set
+        // get() {
+        //     return global.config.host + this.getDatavalue('image')
+        // }
+        // 如何拿到拼接过后的image字段，就是在查询语句的下面，比如查询结果返回给art了，那就是const i = art.get('image') 或者直接 const t = art.image就拿到了
+        // 拿到原始的数据库里面的url const s = art.getDataValue('image')
+
+        // 但是在这个里面不好使
+        // 本来是好使的在最后把结果传出的时候调用内置的序列化方法，就可以调用这个里的get方法得到拼接过后的url
+        // 但是我们在db.js里面重写了model的toJSON方法，返回的是我克隆之后的this.dataValues里面的字段，这个里面的字段直接返回是不受这里的get方法的影响的，所以就还是原来的了
+
+        // 所以一个不是很好的方法就是要再对我们自己重写的这个toJSON里面的方法动手脚
     },
     content: Sequelize.STRING,     // 内容
     pubdate: Sequelize.DATEONLY,   // 发布日期

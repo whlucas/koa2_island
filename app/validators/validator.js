@@ -183,13 +183,18 @@ class SearchValidator extends LinValidator {
                 max: 16
             })
         ]
+        // 从第几条开始取
         this.start = [
+            // 传了就要校验
             new Rule('isInt', '不符合规范', {
                 min: 0,
                 max: 60000
             }),
+            // 可能不传
+            // 第二个是错误信息，一般没有
             new Rule('isOptional', '', 0)
         ]
+        // 取几条
         this.count = [
             new Rule('isInt', '不符合规范', {
                 min: 1,

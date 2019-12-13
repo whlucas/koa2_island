@@ -74,7 +74,7 @@ class Art {
         const scope = 'bh'
         switch (type) {
             case 100:
-                // 用in查询查多个，用findAll
+                // 用in查询查多个，用findAll，findOne是返回查到的第一个
                 arts = await Movie.scope(scope).findAll(finder)
                 break
             case 200:
@@ -121,12 +121,17 @@ class Art {
                 if (!art) {
                     art = await Book.create({
                         id: art_id
+                        // 还有一个字段点赞数量，由于是新建的，默认是0可以不填
                     })
                 }
                 break
             default:
                 break
         }
+
+        // 数据库里面记录的是相对路径
+        // 我请求图片的时候讲我请求到的静态资源的地址前面加上我的这个服务器的地址
+        // 这里还不是最源头的地方，这样改的话要改很多个地方，最好还是在image字段一开始查询出来的时候就给他改了
         // if (art && art.image) {
         //     let imgUrl = art.dataValues.image
         //     art.dataValues.image = global.config.host + imgUrl

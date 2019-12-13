@@ -1,5 +1,6 @@
 // 用sequelize来链接数据库
-const { Sequelize } = require('sequelize')
+const { Sequelize,Model } = require('sequelize')
+const { unset, clone, isArray } = require('lodash')
 const {
     dbName,
     host,
@@ -42,6 +43,44 @@ sequelize.sync({
     force: false // 把force设置成true，如果在model里面的user模块中加一个字段，则它会自动把之前的表删了，重新再建一个表
     // 上线阶段可以直接在DG里面改表，手动维护
 })
+
+// ctx.body传入的一般都是一个对象，koa会自动帮我们调用JSON.stringify进行序列化，这个对象一般都是一个模型
+// 这个模型都是基于model这个基类定义的，所以在model上面重写这个toJSON方法就可以实现自己的序列化
+// 由于在api里面返回出去的是模型，所以要在toJSON中定义返回出去的这个模型的属性
+// 如何把这个对象定义在基类model上面，用原型链
+// 因为希望所有的model在被toJSON实例化的时候都不要返回关于时间的字段
+Model.prototype.toJSON = function () {
+    // 先用lodash拷贝一下，防止删除模型里面的数据，cloneDeep是深拷贝
+    let data = clone(this.dataValues)
+    // lodash里面的删除属性方法
+    unset(data, 'updated_at')
+    unset(data, 'created_at')
+    unset(data, 'deleted_at')
+
+    // 由于这里重写了toJSON
+    // 我最后返回的是这个dataValue里面的东西，这个里面的东西不会受get写在模型里面的get方法影响，干扰了原先toJSON调用get方法返回的逻辑，所以这里要拿到这个里面的东西强行加上前缀
+    for (key in data) {
+        if (key === 'image') {
+            // 由于数据库里面可能有些存的不是相对路径，是以http开头的绝对路径，所以要再判断一下
+            if (!data[key].startsWith('http'))
+                data[key] = global.config.host + data[key]
+        }
+    }
+
+    if (isArray(this.exclude)) {
+        // 我在模型上面的原型链上挂一个exclude，他是一个数组，数组里面是要排除的字段
+        // 然后遍历数组，前提是判断传进来的是一个数组
+        this.exclude.forEach(
+            (value) => {
+                unset(data, value)
+            }
+        )
+    }
+    // this.exclude
+    // exclude
+    // a,b,c,d,e
+    return data
+}
 
 module.exports = {
     sequelize
